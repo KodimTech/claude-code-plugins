@@ -1,0 +1,10 @@
+{
+  "name": "customer-dev",
+  "description": "Senior React Developer assistant for core-web-customer. Ships a Notion task end-to-end: plan → execute (TDD RED→GREEN) → review → PR → pr-ready → address-comments. 6 skills: ship (orchestrator), plan, execute, review (React antipattern scanner), pr-ready, address-comments (triage + apply + reply + resolve review threads). Includes context for a Rails dev learning React, and hooks for cross-subscription imports, `any` types, derived state, and missing keys.",
+  "version": "0.1.0",
+  "author": {
+    "name": "Kodim Tech"
+  },
+  "homepage": "https://github.com/KodimTech/claude-code-plugins",
+  "repository": "https://github.com/KodimTech/claude-code-plugins"
+}
