@@ -1,0 +1,29 @@
+{
+  "agent": "senior-react-dev",
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "input=$(cat); file=$(echo \"$input\" | jq -r 'try (.tool_input.file_path) // \"\"'); content=$(echo \"$input\" | jq -r 'try (.tool_input.content // .tool_input.new_string) // \"\"'); if echo \"$file\" | grep -qE 'src/subscriptions/([^/]+)/'; then src_sub=$(echo \"$file\" | sed -nE 's|.*src/subscriptions/([^/]+)/.*|\\1|p'); cross=$(echo \"$content\" | grep -oE \"from ['\\\"]@/subscriptions/[^/'\\\"]+\" | grep -vE \"@/subscriptions/${src_sub}\\b\" || true); if [ -n \"$cross\" ]; then echo \"[customer-dev hook] ⚠️  Cross-subscription import detected in ${file}. Rule: a subscription NEVER imports from another subscription. Promote shared code to src/components|src/hooks|src/services. Offending line(s):\" >&2; echo \"$cross\" >&2; fi; fi; exit 0"
+          },
+          {
+            "type": "command",
+            "command": "input=$(cat); file=$(echo \"$input\" | jq -r 'try (.tool_input.file_path) // \"\"'); content=$(echo \"$input\" | jq -r 'try (.tool_input.content // .tool_input.new_string) // \"\"'); if echo \"$file\" | grep -qE '\\.(ts|tsx)$'; then if echo \"$content\" | grep -qE '(: *any\\b|<any>|as any\\b|Record<string, *any>|Array<any>)'; then echo \"[customer-dev hook] ⚠️  'any' detected in ${file}. Project rule: no 'any' — use specific types, generics, or 'unknown' + type guards.\" >&2; fi; if echo \"$content\" | grep -qE 'dangerouslySetInnerHTML'; then echo \"[customer-dev hook] 🛑 dangerouslySetInnerHTML in ${file}. XSS risk — sanitize with DOMPurify or avoid. Justify with a comment if truly necessary.\" >&2; fi; if echo \"$content\" | grep -qE 'eslint-disable.*react-hooks/exhaustive-deps'; then echo \"[customer-dev hook] ⚠️  exhaustive-deps disabled in ${file}. Usually the hook is mis-designed (stale closure). Fix the deps instead of silencing.\" >&2; fi; if echo \"$content\" | grep -qE 'key=\\{[a-zA-Z_]*[iI]ndex\\}'; then echo \"[customer-dev hook] ⚠️  key={index} detected in ${file}. Anti-pattern: causes subtle state bugs on reorder. Use a stable unique id.\" >&2; fi; fi; exit 0"
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "input=$(cat); cmd=$(echo \"$input\" | jq -r 'try (.tool_input.command) // \"\"'); if echo \"$cmd\" | grep -qE '^[[:space:]]*git +push'; then echo \"[customer-dev hook] 🔔 Reminder: CI will run lint + format:check + typecheck + test:threshold (75% perFile) + build. Run 'npm run quality:check && npm run build' locally first to avoid a red CI.\" >&2; fi; exit 0"
+          }
+        ]
+      }
+    ]
+  }
+}
