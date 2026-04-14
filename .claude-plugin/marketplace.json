@@ -1,7 +1,7 @@
 {
   "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
   "name": "kodim-api",
-  "description": "Kodim Tech internal Claude Code plugins for core-web-api",
+  "description": "Kodim Tech internal Claude Code plugins for core-web-api and core-web-customer",
   "owner": {
     "name": "Kodim Tech"
   },
@@ -10,6 +10,13 @@
       "name": "api-dev",
       "description": "Senior Rails Developer for core-web-api. End-to-end flow via /api-dev:ship (Notion → plan → execute TDD → PR → signoff) with 2 human checkpoints. Also provides /api-dev:plan, /api-dev:execute, /api-dev:pr-signoff as standalone skills. Includes annotaterb and doppler hooks.",
       "source": "./api-dev",
+      "category": "development",
+      "homepage": "https://github.com/KodimTech/claude-code-plugins"
+    },
+    {
+      "name": "customer-dev",
+      "description": "Senior React + TypeScript Developer for core-web-customer. End-to-end flow via /customer-dev:ship (Notion → plan → execute TDD → review → PR → pr-ready) with 2 human checkpoints. Also provides /customer-dev:plan, /customer-dev:execute, /customer-dev:review (React antipattern scanner), /customer-dev:pr-ready and /customer-dev:address-comments (triage + apply + reply + resolve review threads) as standalone skills. Includes a Rails→React teaching layer and hooks for cross-subscription imports, React smells and push-time CI reminders.",
+      "source": "./customer-dev",
       "category": "development",
       "homepage": "https://github.com/KodimTech/claude-code-plugins"
     }
