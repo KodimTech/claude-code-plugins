@@ -1,0 +1,17 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "kodim-api",
+  "description": "Kodim Tech internal Claude Code plugins for core-web-api",
+  "owner": {
+    "name": "Kodim Tech"
+  },
+  "plugins": [
+    {
+      "name": "api-dev",
+      "description": "Senior Rails Developer for core-web-api. End-to-end flow via /api-dev:ship (Notion → plan → execute TDD → PR → signoff) with 2 human checkpoints. Also provides /api-dev:plan, /api-dev:execute, /api-dev:pr-signoff as standalone skills. Includes annotaterb and doppler hooks.",
+      "source": "./api-dev",
+      "category": "development",
+      "homepage": "https://github.com/KodimTech/claude-code-plugins"
+    }
+  ]
+}

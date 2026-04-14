@@ -1,0 +1,10 @@
+{
+  "name": "api-dev",
+  "description": "Senior Rails Developer assistant for core-web-api. Ships a Notion task end-to-end: plan → execute (TDD RED→GREEN) → PR → signoff. 4 skills: ship (orchestrator), plan, execute, pr-signoff. Includes hooks for annotaterb and doppler reminders.",
+  "version": "0.1.0",
+  "author": {
+    "name": "Kodim Tech"
+  },
+  "homepage": "https://github.com/KodimTech/claude-code-plugins",
+  "repository": "https://github.com/KodimTech/claude-code-plugins"
+}

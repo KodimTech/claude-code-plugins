@@ -1,0 +1,25 @@
+{
+  "agent": "senior-rails-dev",
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "input=$(cat); echo \"$input\" | jq -r 'try (.tool_input.file_path) // \"\"' | grep -qE 'db/migrate/.*\\.rb$' && echo '[api-dev hook] Migration file detected. Reminder: run `doppler run -- bundle exec annotaterb models` after db:migrate, and commit the annotated models.' >&2; exit 0"
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "input=$(cat); cmd=$(echo \"$input\" | jq -r 'try (.tool_input.command) // \"\"'); if echo \"$cmd\" | grep -qE '(bundle exec rspec|bin/rails db:|bin/rails runner)' && ! echo \"$cmd\" | grep -qE 'doppler run'; then echo '[api-dev hook] ⚠️  rspec/rails command without doppler prefix. Tests may fail due to missing ENV vars. Prefer: doppler run --config test -- <cmd>' >&2; fi; exit 0"
+          }
+        ]
+      }
+    ]
+  }
+}
