@@ -1,6 +1,6 @@
 # customer-dev
 
-Claude Code plugin for the **core-web-customer** team at Kodim. Acts as a **Senior ReactJS + TypeScript Developer**: takes a Notion task, generates a detailed `.md` implementation plan, executes it by writing tests (RED → GREEN) and code against the project's house rules, scans the diff for React antipatterns before you open a PR, and walks the PR through signoff.
+Claude Code plugin for the **core-web-customer** team at Kodim. Acts as a **Senior ReactJS + TypeScript Developer**: takes a Notion task, generates a detailed `.md` implementation plan, executes it by writing tests (RED → GREEN) and code against the project's house rules, scans the diff for React antipatterns before you open a PR, and gets the PR ready for review.
 
 Designed for backend-minded developers working on the frontend: the context files include a React mental model, a catalog of pitfalls, TypeScript patterns, a performance guide, and a Rails→React glossary so that someone fluent in core-web-api can work productively in core-web-customer without reinventing conventions or tripping on hooks semantics.
 
@@ -9,7 +9,7 @@ Designed for backend-minded developers working on the frontend: the context file
 ### End-to-end (recommended for new tasks)
 ```
 /customer-dev:ship <notion-url>   → [Opus → Sonnet → Sonnet → Sonnet]
-                                     plan → ⏸️ approve → execute → review → ⏸️ approve → commit → PR → signoff
+                                     plan → ⏸️ approve → execute → review → ⏸️ approve → commit → PR → pr-ready
 ```
 
 Two human checkpoints (plan approval, commit approval). A React antipattern scan runs automatically between execute and the commit checkpoint. Everything else is automated.
@@ -19,7 +19,7 @@ Two human checkpoints (plan approval, commit approval). A React antipattern scan
 /customer-dev:plan <notion-url>                    → [Opus]   generates plan-<TICKET>-<slug>.md
 /customer-dev:execute plan-<TICKET>-<slug>.md      → [Sonnet] writes tests (RED) → implements → coverage → lint → typecheck → build → report
 /customer-dev:review                               → [Sonnet] scans the branch diff for React/TS antipatterns, produces a BLOCKING / LIKELY BUGS / SUGGESTIONS report
-/customer-dev:pr-signoff [<notion-url>]            → [Sonnet] squash → quality:check → build → watch GH Actions → update Notion
+/customer-dev:pr-ready [<notion-url>]              → [Sonnet] squash → quality:check → build → watch GH Actions → update Notion
 ```
 
 A human reviews everything before code is committed. **Skills never commit, push, or open PRs on their own — only `customer-dev:ship` does, and only after the human approves at checkpoint 2.**
@@ -30,7 +30,7 @@ A human reviews everything before code is committed. **Skills never commit, push
 - **`customer-dev:plan`** runs on **Opus** — complex reasoning: classifying the subscription, designing tests with exact values, anchoring analogues with `path:line`, detecting subtle ENV vars and i18n keys.
 - **`customer-dev:execute`** runs on **Sonnet** — more mechanical: follow the plan, write RED tests, implement until GREEN, run lint/typecheck/build.
 - **`customer-dev:review`** runs on **Sonnet** — focused grep-style scan with pitfall citations.
-- **`customer-dev:pr-signoff`** runs on **Sonnet** — deterministic git/CI flow.
+- **`customer-dev:pr-ready`** runs on **Sonnet** — deterministic git/CI flow (naming is literal: it *readies* the PR for review; GitHub Actions is the actual authority).
 
 All skills declare `model:` in their frontmatter, so they run on the right model regardless of your session's active model. Internal skill invocations from `customer-dev:ship` each respect their own `model:`.
 
@@ -182,13 +182,13 @@ The reviewer:
 5. Produces a report grouped by **BLOCKING** / **LIKELY BUGS** / **SUGGESTIONS** — each flag includes `file:line`, snippet, why, proposed fix, and a link to the exact context section
 6. Does **not** edit code — the human (or a follow-up `execute` run) fixes
 
-### PR signoff
+### Prepare the PR for review
 
 ```
-/customer-dev:pr-signoff [<notion-url>]
+/customer-dev:pr-ready [<notion-url>]
 ```
 
-The signoff:
+The skill:
 1. Validates branch naming, PR existence, clean working tree
 2. Extracts the ticket ID from the branch (or the argument)
 3. Squashes multi-commit branches with `--force-with-lease`
@@ -238,15 +238,15 @@ customer-dev/
 │   └── rails-to-react-glossary.md  # Mapping tables for Rails developers
 ├── skills/
 │   ├── ship/
-│   │   └── SKILL.md                # End-to-end orchestrator (plan → execute → review → commit → signoff)
+│   │   └── SKILL.md                # End-to-end orchestrator (plan → execute → review → commit → pr-ready)
 │   ├── plan/
 │   │   └── SKILL.md                # Planner workflow
 │   ├── execute/
 │   │   └── SKILL.md                # Executor workflow (TDD + coverage gate)
 │   ├── review/
 │   │   └── SKILL.md                # React antipattern scanner (diff-scoped)
-│   └── pr-signoff/
-│       └── SKILL.md                # quality:check + GH Actions watch + Notion status update
+│   └── pr-ready/
+│       └── SKILL.md                # squash + quality:check + GH Actions watch + Notion status update
 ├── settings.json                   # Activates the senior-react-dev agent + 3 hooks
 └── README.md
 ```

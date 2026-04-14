@@ -1,5 +1,5 @@
 ---
-description: "End-to-end orchestrator for a Notion task in core-web-customer: runs customer-dev:plan → human checkpoint → customer-dev:execute → customer-dev:review → human checkpoint → commit/push/PR → customer-dev:pr-signoff. Two explicit checkpoints (plan approval, commit approval); everything else is automated."
+description: "End-to-end orchestrator for a Notion task in core-web-customer: runs customer-dev:plan → human checkpoint → customer-dev:execute → customer-dev:review → human checkpoint → commit/push/PR → customer-dev:pr-ready. Two explicit checkpoints (plan approval, commit approval); everything else is automated."
 model: opus
 ---
 
@@ -28,7 +28,7 @@ Usage: /customer-dev:ship <notion-url-or-page-id>
 [IA]    Step 6 — Present execution + review reports + diff preview
 ⏸️      CHECKPOINT 2 (human): approve commit / review diff / fix flagged issues / cancel
 [IA]    Step 7 — Commit + push + gh pr create
-[IA]    Step 8 — Invoke customer-dev:pr-signoff → CI watch + Notion update
+[IA]    Step 8 — Invoke customer-dev:pr-ready → CI watch + Notion update
 [IA]    Step 9 — Final report with PR URL
 ```
 
@@ -309,14 +309,14 @@ EOF
 
 ---
 
-## Step 8 — Invoke `customer-dev:pr-signoff`
+## Step 8 — Invoke `customer-dev:pr-ready`
 
 ```
-Skill: customer-dev:pr-signoff
+Skill: customer-dev:pr-ready
 Args:  <notion-url or ticket ID>
 ```
 
-The signoff will:
+The skill will:
 1. Verify branch/PR state.
 2. Squash commits if > 1 (force-with-lease).
 3. Verify Notion task state.
@@ -365,7 +365,7 @@ Manual follow-ups (from executor / review report):
 - **Never** proceed past a checkpoint if the user didn't explicitly approve.
 - **Always** run `customer-dev:review` between execute and the commit checkpoint. The human sees the antipattern scan before approving the commit.
 - **Never** ignore BLOCKING review flags silently — surface them and default to "fix before commit."
-- **Never** force-push in ship (the PR is created fresh; squash happens later in pr-signoff).
+- **Never** force-push in ship (the PR is created fresh; squash happens later in pr-ready).
 - **Always** include the Notion URL in the PR body for traceability.
 - **If any invoked skill stops** (3 failure rule, open questions, blocker), propagate the stop with full context.
 - **Checkpoint 2 option 5 (cancel)** requires explicit `yes` confirmation before destructive reset — don't assume.
@@ -377,6 +377,6 @@ Manual follow-ups (from executor / review report):
 - You want only a plan (no implementation yet): use `/customer-dev:plan`.
 - You have an existing plan file and want to execute only: use `/customer-dev:execute <plan.md>`.
 - You want only the antipattern scan on your current branch: use `/customer-dev:review`.
-- You already committed manually and just want signoff: use `/customer-dev:pr-signoff`.
+- You already committed manually and just want to prep the PR for review: use `/customer-dev:pr-ready`.
 
 `/customer-dev:ship` is for the **full new-task happy path**. For everything else, use the individual skills.

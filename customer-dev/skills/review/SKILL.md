@@ -5,7 +5,7 @@ model: sonnet
 
 # React Pre-Review — core-web-customer
 
-Scans the diff between the current branch and `main` looking for known antipatterns. Meant to run AFTER `customer-dev:execute` and BEFORE `customer-dev:pr-signoff`. Produces a report, not edits — the human decides what to fix.
+Scans the diff between the current branch and `main` looking for known antipatterns. Meant to run AFTER `customer-dev:execute` and BEFORE `customer-dev:pr-ready`. Produces a report, not edits — the human decides what to fix.
 
 **Input:** optional `$ARGUMENTS` — a subset of paths to scan. Defaults to the full diff.
 
@@ -247,7 +247,7 @@ Lint:       2 warnings in changed files
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 Summary: <N-blocking> blocking, <N-likely> likely bugs, <N-suggestion> suggestions.
-Next:    resolve BLOCKING (any remaining) and LIKELY BUGS before `customer-dev:pr-signoff`.
+Next:    resolve BLOCKING (any remaining) and LIKELY BUGS before `customer-dev:pr-ready`.
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
 
@@ -256,7 +256,7 @@ If the report is clean (no BLOCKING or LIKELY BUGS):
 ```
 ✅ No React antipatterns detected in the diff.
 Automated gates:  typecheck ✅  lint ✅
-Ready for:        customer-dev:pr-signoff
+Ready for:        customer-dev:pr-ready
 ```
 
 ---

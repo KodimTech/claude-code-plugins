@@ -1,11 +1,13 @@
 ---
-description: "Validate and sign off a PR in core-web-customer: squash commits, run the local quality gate (lint + format + typecheck + test:threshold + build), watch GitHub Actions CI (quality / test / build), and update the Notion task status."
+description: "Prepare a PR in core-web-customer for review: squash commits, run the local quality gate (lint + format + typecheck + test:threshold + build) as a fast pre-push check, watch GitHub Actions CI (quality / test / build) which is the authority, and update the Notion task status to Code Review on success."
 model: sonnet
 ---
 
-# PR Signoff — core-web-customer
+# PR Ready — core-web-customer
 
-Validates and completes the signoff workflow for a Pull Request before it goes to review. Squashes commits, runs the local quality gate, watches the 3-job GitHub Actions pipeline, and updates the task status in Notion.
+Prepares a Pull Request to be handed off to reviewers. Squashes commits, runs the local quality gate as a fast pre-check, watches the 3-job GitHub Actions pipeline (the authority for pass/fail), and updates the task status in Notion once everything is green.
+
+This is **not** a "signoff" — GitHub Actions owns that. This skill is the ergonomic wrapper around the chore work of squash + wait-for-CI + move the Notion card.
 
 **Input:** optional `$ARGUMENTS` — Notion URL or page ID. If omitted, the skill tries to infer the ticket from the branch name.
 
@@ -218,7 +220,7 @@ When local + CI are both green:
 
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-📊 PR Signoff Summary
+📊 PR Ready Summary
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 Task:   <TICKET> — <title>
