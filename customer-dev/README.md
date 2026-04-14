@@ -20,6 +20,7 @@ Two human checkpoints (plan approval, commit approval). A React antipattern scan
 /customer-dev:execute plan-<TICKET>-<slug>.md      → [Sonnet] writes tests (RED) → implements → coverage → lint → typecheck → build → report
 /customer-dev:review                               → [Sonnet] scans the branch diff for React/TS antipatterns, produces a BLOCKING / LIKELY BUGS / SUGGESTIONS report
 /customer-dev:pr-ready [<notion-url>]              → [Sonnet] squash → quality:check → build → watch GH Actions → update Notion
+/customer-dev:address-comments [<pr-number>]      → [Sonnet] triage Copilot + human review comments → apply → commit → reply → resolve threads
 ```
 
 A human reviews everything before code is committed. **Skills never commit, push, or open PRs on their own — only `customer-dev:ship` does, and only after the human approves at checkpoint 2.**
@@ -31,6 +32,7 @@ A human reviews everything before code is committed. **Skills never commit, push
 - **`customer-dev:execute`** runs on **Sonnet** — more mechanical: follow the plan, write RED tests, implement until GREEN, run lint/typecheck/build.
 - **`customer-dev:review`** runs on **Sonnet** — focused grep-style scan with pitfall citations.
 - **`customer-dev:pr-ready`** runs on **Sonnet** — deterministic git/CI flow (naming is literal: it *readies* the PR for review; GitHub Actions is the actual authority).
+- **`customer-dev:address-comments`** runs on **Sonnet** — triage of review threads against the project's context files, apply fixes, reply + resolve.
 
 All skills declare `model:` in their frontmatter, so they run on the right model regardless of your session's active model. Internal skill invocations from `customer-dev:ship` each respect their own `model:`.
 
@@ -182,6 +184,25 @@ The reviewer:
 5. Produces a report grouped by **BLOCKING** / **LIKELY BUGS** / **SUGGESTIONS** — each flag includes `file:line`, snippet, why, proposed fix, and a link to the exact context section
 6. Does **not** edit code — the human (or a follow-up `execute` run) fixes
 
+### Address review comments
+
+```
+/customer-dev:address-comments [<pr-number>]
+```
+
+The skill:
+1. Fetches open review threads via GraphQL (ignores `isResolved: true`, flags `isOutdated`)
+2. Classifies each comment's author (Copilot, other bot, human)
+3. Loads the 12 React/TS context files
+4. Reads the diff and each touched file in full
+5. Triages each thread into **ACCEPT** / **ADAPT** / **REJECT** / **ESCALATE** with a **mandatory citation** (diff line or `context/<file>.md § section`)
+6. Copilot threshold is higher than humans (high signal-to-noise bar — most stylistic restructures REJECT as redundant with CI)
+7. Presents a grouped-by-file report, waits for your approval at a checkpoint
+8. Applies ACCEPT/ADAPT fixes with the 3-attempt rule (writes tests first if the fix is logic-bearing and uncovered)
+9. Commits as `[FIX] Address PR review comments - <TICKET>` and pushes
+10. Posts replies in GitHub and marks threads as resolved (reply first, then resolve)
+11. Leaves ESCALATE threads untouched for your call
+
 ### Prepare the PR for review
 
 ```
@@ -245,8 +266,10 @@ customer-dev/
 │   │   └── SKILL.md                # Executor workflow (TDD + coverage gate)
 │   ├── review/
 │   │   └── SKILL.md                # React antipattern scanner (diff-scoped)
-│   └── pr-ready/
-│       └── SKILL.md                # squash + quality:check + GH Actions watch + Notion status update
+│   ├── pr-ready/
+│   │   └── SKILL.md                # squash + quality:check + GH Actions watch + Notion status update
+│   └── address-comments/
+│       └── SKILL.md                # Triage review comments (Copilot + humans) → apply → reply → resolve
 ├── settings.json                   # Activates the senior-react-dev agent + 3 hooks
 └── README.md
 ```
