@@ -1,0 +1,10 @@
+{
+  "name": "project-manager",
+  "description": "Senior Project Manager assistant for the Kathy product (AI agent managing sales and bookings over WhatsApp). Plans, prioritizes and grooms work in Fizzy (single Kathy board) on a weekly calibrated-capacity cadence for a solo dev. 7 skills: bootstrap (state file + board setup), weekly-plan, groom (includes triage), create-card, status, weekly-review (with capacity calibration loop), roadmap, log-feedback. External memory lives at ~/.kathy-pm/project-state.md so it survives plugin updates. Includes domain heuristics for sales / reservations / customer service. Hands technical breakdown off to /api-dev:plan and /customer-dev:plan via repo:* tags; supports ops cards (type:ops, repo:none) for non-code work.",
+  "version": "0.2.1",
+  "author": {
+    "name": "Kodim Tech"
+  },
+  "homepage": "https://github.com/KodimTech/claude-code-plugins",
+  "repository": "https://github.com/KodimTech/claude-code-plugins"
+}
