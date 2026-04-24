@@ -92,7 +92,9 @@ The midpoints above are what `weekly-plan` and `weekly-review` sum for capacity 
 
 ## Card shape (what a well-formed card looks like)
 
-Every card's description follows this template:
+> **API note:** Fizzy uses Rails Action Text. The `description` field must be sent as **HTML**, not Markdown. Always convert the Markdown draft to HTML before calling `create_card` or `update_card`. See `create-card/SKILL.md § Step 9` for the conversion rules.
+
+Every card's description follows this template (shown in Markdown for readability; convert to HTML before sending):
 
 ```markdown
 ### Contexto

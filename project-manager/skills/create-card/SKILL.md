@@ -207,13 +207,40 @@ If the user edits, apply and re-show.
 On confirmation:
 
 1. Decide target column: `Triage` if all required tags confident; `Backlog` if `needs-input` is needed.
-2. `create_card(board_id, title, description, column_id)`.
-3. For each tag: `toggle_card_tag(card_id, tag)`.
-4. Optional: convert AC into `create_step` calls only if the founder asked. Default: leave AC inline.
-5. Append a comment documenting origin:
+2. **Convert description to HTML** before calling `create_card`. Fizzy uses Rails Action Text and renders HTML, not Markdown. Apply these rules to the draft from Step 7:
+
+   | Markdown | HTML |
+   |---|---|
+   | `### Título` | `<h3>Título</h3>` |
+   | `## Título` | `<h2>Título</h2>` |
+   | `- [ ] item` | `<ul><li>☐ item</li></ul>` |
+   | `- [x] item` | `<ul><li>☑ item</li></ul>` |
+   | `- item` | `<ul><li>item</li></ul>` |
+   | consecutive `- items` | one single `<ul>` wrapping all `<li>` items |
+   | `**texto**` | `<strong>texto</strong>` |
+   | `*texto*` | `<em>texto</em>` |
+   | `` `código` `` | `<code>código</code>` |
+   | blank line between blocks | separate block elements (no extra `<br>`) |
+   | plain paragraph | `<p>texto</p>` |
+
+   Example conversion:
+   ```
+   ### Criterios de aceptación
+   - [ ] AC 1
+   - [ ] AC 2
+   ```
+   becomes:
+   ```html
+   <h3>Criterios de aceptación</h3><ul><li>☐ AC 1</li><li>☐ AC 2</li></ul>
+   ```
+
+3. `create_card(board_id, title, description_html, column_id)` — pass the HTML string, not the Markdown draft.
+4. For each tag: `toggle_card_tag(card_id, tag)`.
+5. Optional: convert AC into `create_step` calls only if the founder asked. Default: leave AC inline.
+6. Append a comment documenting origin:
    - `--from-customer=<tier/name>` → `"Origen: feedback de <tier/name> (<fecha>)."`.
    - otherwise → `"Card creada por /project-manager:create-card a partir de: <primera línea recortada a 140 chars>."`.
-6. If a `domain-heuristics.md` flag fired, append a second comment: `"Heurística: <ref>. Recomendación: <acción>."`.
+7. If a `domain-heuristics.md` flag fired, append a second comment: `"Heurística: <ref>. Recomendación: <acción>."`.
 
 ---
 
